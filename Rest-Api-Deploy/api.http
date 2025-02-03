@@ -12,7 +12,6 @@ POST http://localhost:3000/movies
 Content-Type: application/json
 
 {
-  "sql":  "SElECT * FROM movies", // -> no lo toma en cuenta porque se realizo la validacion
   "title": "The Godfather",
   "year": 1975,
   "director": "Francis Ford Coppola",
@@ -31,5 +30,7 @@ Content-Type: application/json
   "year": 1993
 }
 
+### Eliminar una pelicula con DELETE
+DELETE http://localhost:3000/movies/dcdd0fad-a94c-4810-8acc-5f108d3b18c3
 
 
