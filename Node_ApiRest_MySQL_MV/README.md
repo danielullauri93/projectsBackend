@@ -1,3 +1,5 @@
+# NOTAS:
+
 ##  ¿Por qué se usa [genres] en const [genres] = await connection.query(...)?
 
   
