@@ -18,7 +18,7 @@ const movieSchema = z.object({
         invalid_type_error: 'Movie genre must be an array of enum Genre',
       }
     )
-  ),
+  ).optional(),
   rate: z.number().min(0).max(10).default(5),
 });
 

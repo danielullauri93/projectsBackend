@@ -2,35 +2,35 @@
 GET http://localhost:3000/movies
 
 ### Recuperar una pelicula por id
-GET http://localhost:3000/movies/b6e03689-cccd-478e-8565-d92f40813b13
+GET http://localhost:3000/movies/8526afa8-e402-11ef-9a3e-0242ac120002
 
 ### Recuperar todas las peliculas por genero
-GET http://localhost:3000/movies?genre=biography
+GET http://localhost:3000/movies?genre=ACTION
 
 ### Crear una pelicula con POST
 POST http://localhost:3000/movies
 Content-Type: application/json
 
 {
-  "title": "The Godfather",
-  "year": 1975,
-  "director": "Francis Ford Coppola",
-  "duration": 175,
-  "poster": "https://img.fruugo.com/product/4/49/14441491_max.jpg",
-  "genre": ["Crime", "Drama"],
-  "rate": 9.2
+  "title": "Hola",
+  "year": 2012,
+  "director": "Christopher Nolan",
+  "duration": 165,
+  "poster": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Batman_3.JPG/260px-Batman_3.JPG",
+  "rate": 9.2,
+  "genre": ["Action", "Crime"]
 }
 
 ### Actualizar una pelicula con PATCH (Solo se actualiza el campo que se envia)
-PATCH http://localhost:3000/movies/dcdd0fad-a94c-4810-8acc-5f108d3b18c3
+PATCH http://localhost:3000/movies/e2fd41e9-e740-11ef-9ed4-0242ac120002
 Content-Type: application/json
 
 {
-  "title": "Hola",
+  "title": "Kaka",
   "year": 1993
 }
 
 ### Eliminar una pelicula con DELETE
-DELETE http://localhost:3000/movies/dcdd0fad-a94c-4810-8acc-5f108d3b18c3
+DELETE http://localhost:3000/movies/f8fc29b2-e740-11ef-9ed4-0242ac120002
 
 

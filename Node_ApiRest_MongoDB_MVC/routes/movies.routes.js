@@ -1,24 +1,26 @@
 import { Router } from "express";
-
-
-
+// import { MovieModel } from "../models/mysql/movie.model.js";
 import { MovieController } from "../controllers/movies.controller.js";
 
-const router = Router();
+export const createMovieRouter = ({ movieModel }) => { // creamos una funcion en la que podemos devolver la creacion del router 
+  const router = Router();
 
-// Recuperar todas las peliculas de un genero y por genero –––––––––––––––––––––––––––––––––––––––––––––––––
-router.get('/', MovieController.getAll);
+  const movieController = new MovieController({ movieModel })
 
-// Recuperar una pelicula por su id –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-router.get('/:id', MovieController.getById);
+  // Recuperar todas las peliculas de un genero y por genero –––––––––––––––––––––––––––––––––––––––––––––––––
+  router.get('/', movieController.getAll);
 
-// Crear una nueva pelicula –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-router.post('/', MovieController.create);
+  // Recuperar una pelicula por su id –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+  router.get('/:id', movieController.getById);
 
-// Actualizar una pelicula PATCH (actualiza solo los campos que se envian) PUT (actualiza todos los campos) –––––––––––––
-router.patch('/:id', MovieController.update);
+  // Crear una nueva pelicula –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+  router.post('/', movieController.create);
 
-// Borrar una pelicula DELETE –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-router.delete('/:id', MovieController.delete);
+  // Actualizar una pelicula PATCH (actualiza solo los campos que se envian) PUT (actualiza todos los campos) –––––––––––––
+  router.patch('/:id', movieController.update);
 
-export default router;
+  // Borrar una pelicula DELETE –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+  router.delete('/:id', movieController.delete);
+
+  return router;
+}
