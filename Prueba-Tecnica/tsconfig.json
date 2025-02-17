@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ES6", // Define la versión de JavaScript a la que se compilará (ES6 en este caso).
+    "module": "CommonJS", // Usa el sistema de módulos CommonJS, que es compatible con Node.js.
+    "moduleResolution": "Node", // Permite resolver módulos como lo hace Node.js, facilitando importaciones.
+    "outDir": "./dist", // La salida compilada de TypeScript irá a "dist/"
+    "rootDir": "./src", // Indica que los archivos fuente están dentro de la carpeta "src".
+    "strict": true, // Habilita todas las reglas estrictas de TypeScript para mejorar la seguridad del código.
+    "skipLibCheck": true, // Evita revisar los archivos de definición de tipos (.d.ts), reduciendo el tiempo de compilación.
+    "forceConsistentCasingInFileNames": true, // Previene errores por diferencias de mayúsculas y minúsculas en nombres de archivos.
+    "allowJs": true, // Permite importar archivos `.js` dentro del proyecto TypeScript.
+    "esModuleInterop": true, // Permite usar `import express from "express";` en lugar de `import * as express from "express";`.
+    "resolveJsonModule": true, // Permite importar archivos `.json` directamente con `import config from "./config.json";`.
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/types"
+    ]
+  },
+  "include": [
+    "src/**/*"
+  ], // Incluye todos los archivos dentro de la carpeta "src".
+  "exclude": [
+    "node_modules",
+    "src/views/dist", // Ignorar la compilación de los archivos de React generados por Vite
+    "dist",
+    "src/views/eslint.config.js",
+    "src/**/*.ts", // Asegúrate de que todos los archivos TypeScript estén incluidos
+    "src/types/**/*.d.ts"
+  ] // Excluye la carpeta "node_modules", eslint, views/dist (del front), dist(front) para mejorar el rendimiento.
+}

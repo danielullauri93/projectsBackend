@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RealTime-Chat</title>
+  <script type="module">
+    import io from 'https://cdn.socket.io/4.3.2/socket.io.esm.min.js';
+
+    const socket = io('http://localhost:3000');
+
+    // empezamos que hable el cliente y el servidor
+    const form = document.getElementById('form'); // nos traemos el formulario para cuando hacemos submit
+    const input = document.getElementById('input'); // nos traemos el input para leer la informacion del mensaje
+    const messages = document.getElementById('messages'); // nos traemos la lista de los mensajes
+
+    socket.on('chat message', (msg) => { // escuchamos el evento que envia el server y lo mostramos en pantalla
+      const item = `<li>${msg}</li>`
+      messages.insertAdjacentHTML('beforeend', item)
+    });
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault(); // evitamos que se recargue la pagina al enviar el formulario
+      if (input.value) { // verificamos que el input no este vacio y que no este vacio
+        socket.emit('chat message', input.value); // emitimos el mensaje al servidor
+        input.value = ''; // reseteamos el input (cuando le da enter, se borre el input)
+      }
+    });
+  </script>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    :root {
+      color-scheme: light dark;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      display: grid;
+      place-content: center;
+      height: 100vh;
+      padding: 36px 36px 50px 36px;
+      grid-template-rows: 1fr;
+    }
+
+    #messages {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      overflow-y: scroll;
+      height: 100%;
+      scroll-behavior: smooth;
+      padding-bottom: 48px;
+    }
+
+    #messages>li {
+      padding: .5rem 1rem;
+    }
+
+    #messages>li:nth-child(odd) {
+      background: #283b4d;
+    }
+
+    #chat {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      overflow: hidden;
+      width: 350px;
+      height: 100%;
+      position: relative;
+    }
+
+    #form {
+      bottom: 0;
+      display: flex;
+      height: 48px;
+      left: 0;
+      padding: 4px;
+      position: absolute;
+      right: 0;
+    }
+
+    #input {
+      background-color: #cccbca;
+      color: #1c2833;
+      border-radius: 9999px;
+      border: 1px solid #eee;
+      flex: 1;
+      margin: 4px;
+      padding: 0 8px;
+    }
+
+    #input:focus {
+      outline: 0;
+    }
+
+    #form>button {
+      background-color: #09f;
+      color: #fff;
+      border: none;
+      margin: 4px;
+      border-radius: 4px;
+    }
+
+    #form>button:hover {
+      background-color: #0cf;
+    }
+  </style>
+</head>
+
+<body>
+  <section id="chat">
+    <!-- Aquí se mostrarán los mensajes -->
+    <ul id="messages"></ul>
+
+    <!-- Aquí se agregarán los nuevos mensajes en el formulario -->
+    <form id="form">
+      <input type="text" name="message" id="input" placeholder="Type a message..." autocomplete="off" />
+      <button type="submit">Send</button>
+    </form>
+  </section>
+</body>
+
+</html>
