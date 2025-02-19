@@ -8,26 +8,54 @@
   <script type="module">
     import io from 'https://cdn.socket.io/4.3.2/socket.io.esm.min.js';
 
-    const socket = io('http://localhost:3000');
+    // Función para obtener el nombre de usuario
+    const getUsername = async () => {
+      const username = localStorage.getItem('username'); // Obtiene el username guardado
+      if (username) {
+        console.log(`User exists: ${username}`);
+        return username;
+      }
 
-    // empezamos que hable el cliente y el servidor
-    const form = document.getElementById('form'); // nos traemos el formulario para cuando hacemos submit
-    const input = document.getElementById('input'); // nos traemos el input para leer la informacion del mensaje
-    const messages = document.getElementById('messages'); // nos traemos la lista de los mensajes
+      const res = await fetch('https://randomuser.me/api/');
+      const data = await res.json();
+      const randomUsername = data.results[0].login.username; // Obtener el username de la API
 
-    socket.on('chat message', (msg) => { // escuchamos el evento que envia el server y lo mostramos en pantalla
-      const item = `<li>${msg}</li>`
-      messages.insertAdjacentHTML('beforeend', item)
+      localStorage.setItem('username', randomUsername);
+      return randomUsername;
+    };
+
+    // Ahora sí puedes usar `await getUsername()`
+    const socket = io({
+      auth: {
+        username: await getUsername(),
+        serverOffset: 0,
+      }
+    });
+
+    const form = document.getElementById('form');
+    const input = document.getElementById('input');
+    const messages = document.getElementById('messages');
+
+    socket.on('chat message', (msg, serverOffset, username) => {
+      const item = `<li>
+        <p>${msg}</p>
+        <small>${username}</small>
+        </li>`;
+      messages.insertAdjacentHTML('beforeend', item);
+      socket.auth.serverOffset = serverOffset;
+      // scroll to bottom of messages
+      messages.scrollTop = messages.scrollHeight; // Auto-scroll
     });
 
     form.addEventListener('submit', (event) => {
-      event.preventDefault(); // evitamos que se recargue la pagina al enviar el formulario
-      if (input.value) { // verificamos que el input no este vacio y que no este vacio
-        socket.emit('chat message', input.value); // emitimos el mensaje al servidor
-        input.value = ''; // reseteamos el input (cuando le da enter, se borre el input)
+      event.preventDefault();
+      if (input.value) {
+        socket.emit('chat message', input.value);
+        input.value = '';
       }
     });
   </script>
+
   <style>
     *,
     *::before,
@@ -45,7 +73,7 @@
       display: grid;
       place-content: center;
       height: 100vh;
-      padding: 36px 36px 50px 36px;
+      padding: 36px 36px 100px 36px;
       grid-template-rows: 1fr;
     }
 
@@ -64,7 +92,7 @@
     }
 
     #messages>li:nth-child(odd) {
-      background: #283b4d;
+      background: #09f;
     }
 
     #chat {
@@ -87,8 +115,6 @@
     }
 
     #input {
-      background-color: #cccbca;
-      color: #1c2833;
       border-radius: 9999px;
       border: 1px solid #eee;
       flex: 1;
@@ -101,15 +127,15 @@
     }
 
     #form>button {
-      background-color: #09f;
+      background: #09f;
       color: #fff;
-      border: none;
+      border: 0;
       margin: 4px;
       border-radius: 4px;
     }
 
     #form>button:hover {
-      background-color: #0cf;
+      background: #0cf;
     }
   </style>
 </head>

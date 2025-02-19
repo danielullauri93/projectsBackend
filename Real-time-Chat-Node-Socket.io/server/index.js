@@ -27,21 +27,55 @@ const db = createClient({
   authToken: process.env.DB_TOKEN
 })
 
+await db.execute(`
+  CREATE TABLE IF NOT EXISTS messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    content TEXT,
+    user TEXT
+)`)
+
 
 
 //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 // Evento de conexión con el socket.io
-io.on('connection', (socket) => {
+io.on('connection', async (socket) => {
   console.log('Un cliente se ha conectado');
 
   socket.on('disconnect', () => {
     console.log('Un cliente se ha desconectado');
   });
 
-  socket.on('chat message', (msg) => {
+  socket.on('chat message', async (msg) => {
     // console.log(`Mensaje recibido: ${msg}`); // Aquí debería aparecer el mensaje
-    io.emit('chat message', msg); // Enviamos el mensaje a todos los clientes conectados
+    let result
+    const username = socket.handshake.auth.username ?? 'anonymous' // Obtenemos el nombre de usuario del cliente, si no hay, se pone 'anonymous'
+    try {
+      result = await db.execute({
+        sql: `INSERT INTO messages (content, user) VALUES (:msg, :username)`, // Insertamos el mensaje en la base de datos
+        args: { msg, username } // Pasamos el mensaje como argumento
+      })
+    } catch (error) {
+      console.error(error)
+      return
+    }
+    io.emit('chat message', msg, result.lastInsertRowid.toString(), username); // Enviamos el mensaje a todos los clientes conectados, result.lastInsertRowid.toString() es el id del mensaje
   });
+
+  if (!socket.recovered) { // <–– recupera los mensajes que se han perdido
+    try {
+      const result = await db.execute({
+        sql: `SELECT id, content, user FROM messages WHERE id > ?`,
+        args: [socket.handshake.auth.serverOffset ?? 0]
+      })
+
+      result.rows.forEach(row => {
+        socket.emit('chat message', row.content, row.id.toString(), row.user) // Enviamos todos los mensajes almacenados en la base de datos a todos los clientes conectados
+      })
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
 });
 
 app.use(logger('dev')) // Con 'logger' gracias a 'morgan', cada vez que alguien haga una solicitud al servidor, se imprimirá información en la terminal
